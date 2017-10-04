@@ -4,6 +4,13 @@ import { getMetricMetaInfo, timeToString } from '../utils/helpers'
 import UdaciSlider from './udaciSlider'
 import UdaciSteppers from './udaciStepper'
 import DateHeader from './DateHeader'
+import { Ionicons } from '@expo/vector-icons'
+import TextButton from './textButton'
+import { submitEntry, removeEntry } from '../utils/api'
+import { connect } from 'react-redux'
+import { addEntry } from '../actions'
+import { getDailyReminderValue } from '../utils/helpers'
+
 
 function SubmitBtn ({ onPress }){
   return (
@@ -14,11 +21,7 @@ function SubmitBtn ({ onPress }){
   )
 }
 
-
-
-
-
-export default class AddEntry extends Component {
+class AddEntry extends Component {
   state = {
     run: 0,
     bike: 0,
@@ -59,6 +62,9 @@ export default class AddEntry extends Component {
     const entry = this.state
 
     //update redux
+    this.props.dispatch(addEntry({
+      [key]: entry
+    }))
 
     this.setState( () => ({ 
       run: 0,
@@ -72,15 +78,46 @@ export default class AddEntry extends Component {
 
 
     //save to Db
+    submitEntry({key, entry})
 
     //clearn local notification
   }
 
+  reset = () => {
+    const key = timeToString()
 
+    //update redux
+    this.props.dispatch(addEntry({
+      [key]:getDailyReminderValue()
+
+    }))
+  
+
+    //route to home
+
+    // update Db
+    removeEntry(entry)
+  }
 
 
   render() {
     const metaInfo = getMetricMetaInfo()
+
+    if (this.props.alreadyLogged) {
+      return (
+        <View>
+          <Ionicons
+            name={'ios-happy-outline'}
+            size={100}
+          />
+          <Text>You already logged your information for today.</Text>
+          <TextButton onPress={this.reset}>
+            Reset
+          </TextButton>
+        </View>
+      )
+    }
+
 
     return (
       <View>
@@ -112,3 +149,13 @@ export default class AddEntry extends Component {
     )
   }
 }
+
+function mapStateToProps(state){
+  const key = timeToString()
+
+  return {
+    alreadyLogged: state[key] && typeof state[key].today === 'undefined'
+  }
+}
+
+export default connect(mapStateToProps)(AddEntry)
