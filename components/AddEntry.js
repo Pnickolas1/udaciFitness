@@ -96,7 +96,7 @@ class AddEntry extends Component {
     //route to home
 
     // update Db
-    removeEntry(entry)
+    removeEntry(key)
   }
 
 
