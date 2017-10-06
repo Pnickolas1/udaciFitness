@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native'
+import { View, TouchableOpacity, Text, StyleSheet, Platform } from 'react-native'
 import { FontAwesome, Entypo } from '@expo/vector-icons'
 import { white, gray, purple } from '../utils/colors'
 
@@ -7,22 +7,35 @@ import { white, gray, purple } from '../utils/colors'
 export default function UdaciStepper({ max, unit, step, value, onIncrement, onDecrement }){
     return(
         <View style={[styles.row, {justifyContent: 'space-between'}]}>
-            <View style={{flexDirection: 'row'}}>
+            {Platform.OS === 'ios'
+             ? <View style={{flexDirection: 'row'}}>
                 <TouchableOpacity
                      style={[styles.iosBtn,  {borderTopRightRadius: 0, borderBottomRightRadius: 0}]}
                      onPress={onDecrement}>
-                    <FontAwesome name="minus" size={30} color={purple} />
+                    <Entypo name="minus" size={30} color={purple} />
                 </TouchableOpacity>
                 <TouchableOpacity 
                     style={[styles.iosBtn, {borderTopLeftRadius: 0, borderBottomLeftRadius: 0} ]}
                     onPress={onIncrement}>
-                    <FontAwesome name="plus" size={30} color={purple} />
+                    <Entypo name="plus" size={30} color={purple} />
                 </TouchableOpacity>
-            </View>
+            </View> 
+            : <View style={{flexDirection: 'row'}}>
+                <TouchableOpacity
+                     style={[styles.andriodBtn,  {borderTopRightRadius: 0, borderBottomRightRadius: 0}]}
+                     onPress={onDecrement}>
+                    <FontAwesome name="minus" size={30} color={white} />
+                </TouchableOpacity>
+                <TouchableOpacity 
+                    style={[styles.andriodBtn, {borderTopLeftRadius: 0, borderBottomLeftRadius: 0} ]}
+                    onPress={onIncrement}>
+                    <FontAwesome name="plus" size={30} color={white} />
+                </TouchableOpacity>
+            </View> }
             <View style={styles.metricCounter}>
                 <Text style={{ fontSize: 24, textAlign: 'center'}}>{value}</Text>
                 <Text style={{ fontSize: 18, color: gray}}>{unit}</Text>
-            </View>
+            </View> 
         </View>
     )
 }
@@ -42,6 +55,12 @@ const styles = StyleSheet.create({
         padding: 5, 
         paddingLeft: 25,
         paddingRight: 25,
+    },
+    andriodBtn: {
+        margin: 5,
+        backgroundColor: purple,
+        padding: 10, 
+        borderRadius: 2,
     },
     metricCounter: {
         width: 100,
